@@ -30,12 +30,18 @@ static iToastSettings *sharedSettings = nil;
 }
 
 - (void) show{
+	[self show:iToastTypeNone];
+}
+
+- (void) show:(iToastType) type{
 	
 	iToastSettings *theSettings = _settings;
 	
 	if (!theSettings) {
 		theSettings = [iToastSettings getSharedSettings];
 	}
+	
+	UIImage *image = [theSettings.images valueForKey:[NSString stringWithFormat:@"%i", type]];
 	
 	UIFont *font = [UIFont systemFontOfSize:16];
 	CGSize textSize = [text sizeWithFont:font constrainedToSize:CGSizeMake(280, 60)];
@@ -50,9 +56,21 @@ static iToastSettings *sharedSettings = nil;
 	label.shadowOffset = CGSizeMake(1, 1);
 	
 	UIButton *v = [UIButton buttonWithType:UIButtonTypeCustom];
-	v.frame = CGRectMake(0, 0, textSize.width + 10, textSize.height + 10);
-	label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
+	if (image) {
+		v.frame = CGRectMake(0, 0, image.size.width + textSize.width + 15, MAX(textSize.height, image.size.height) + 10);
+		label.center = CGPointMake(image.size.width + 10 + (v.frame.size.width - image.size.width - 10) / 2, v.frame.size.height / 2);
+	} else {
+		v.frame = CGRectMake(0, 0, textSize.width + 10, textSize.height + 10);
+		label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
+	}
 	[v addSubview:label];
+	
+	if (image) {
+		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+		imageView.frame = CGRectMake(5, (v.frame.size.height - image.size.height)/2, image.size.width, image.size.height);
+		[v addSubview:imageView];
+		[imageView release];
+	}
 	
 	v.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
 	v.layer.cornerRadius = 5;
@@ -220,6 +238,11 @@ static iToastSettings *sharedSettings = nil;
 @synthesize images;
 
 - (void) setImage:(UIImage *) img forType:(iToastType) type{
+	if (type == iToastTypeNone) {
+		// This should not be used, internal use only (to force no image)
+		return;
+	}
+	
 	if (!images) {
 		images = [[NSMutableDictionary alloc] initWithCapacity:4];
 	}
