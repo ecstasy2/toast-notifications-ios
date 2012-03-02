@@ -165,7 +165,11 @@ static iToastSettings *sharedSettings = nil;
 										   userInfo:nil repeats:NO];
 	[[NSRunLoop mainRunLoop] addTimer:timer1 forMode:NSDefaultRunLoopMode];
 	
+	v.alpha = 0;
 	[window addSubview:v];
+	[UIView beginAnimations:nil context:nil];
+	v.alpha = 1;
+	[UIView commitAnimations];
 	
 	view = [v retain];
 	
