@@ -30,12 +30,18 @@ static iToastSettings *sharedSettings = nil;
 }
 
 - (void) show{
+	[self show:iToastTypeNone];
+}
+
+- (void) show:(iToastType) type{
 	
 	iToastSettings *theSettings = _settings;
 	
 	if (!theSettings) {
 		theSettings = [iToastSettings getSharedSettings];
 	}
+	
+	UIImage *image = [theSettings.images valueForKey:[NSString stringWithFormat:@"%i", type]];
 	
 	UIFont *font = [UIFont systemFontOfSize:16];
 	CGSize textSize = [text sizeWithFont:font constrainedToSize:CGSizeMake(280, 60)];
@@ -50,9 +56,21 @@ static iToastSettings *sharedSettings = nil;
 	label.shadowOffset = CGSizeMake(1, 1);
 	
 	UIButton *v = [UIButton buttonWithType:UIButtonTypeCustom];
-	v.frame = CGRectMake(0, 0, textSize.width + 10, textSize.height + 10);
-	label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
+	if (image) {
+		v.frame = CGRectMake(0, 0, image.size.width + textSize.width + 15, MAX(textSize.height, image.size.height) + 10);
+		label.center = CGPointMake(image.size.width + 10 + (v.frame.size.width - image.size.width - 10) / 2, v.frame.size.height / 2);
+	} else {
+		v.frame = CGRectMake(0, 0, textSize.width + 10, textSize.height + 10);
+		label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
+	}
 	[v addSubview:label];
+	
+	if (image) {
+		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
+		imageView.frame = CGRectMake(5, (v.frame.size.height - image.size.height)/2, image.size.width, image.size.height);
+		[v addSubview:imageView];
+		[imageView release];
+	}
 	
 	v.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
 	v.layer.cornerRadius = 5;
@@ -61,17 +79,85 @@ static iToastSettings *sharedSettings = nil;
 	
 	CGPoint point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
 	
-	if (theSettings.gravity == iToastGravityTop) {
-		point = CGPointMake(window.frame.size.width / 2, 45);
-	}else if (theSettings.gravity == iToastGravityBottom) {
-		point = CGPointMake(window.frame.size.width / 2, window.frame.size.height - 45);
-	}else if (theSettings.gravity == iToastGravityCenter) {
-		point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
-	}else{
-		point = theSettings.postition;
-	}
-	
-	point = CGPointMake(point.x + offsetLeft, point.y + offsetTop);
+    // Set correct orientation/location regarding device orientation
+    UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
+    switch (orientation) {
+        case UIDeviceOrientationPortrait:
+        {
+            if (theSettings.gravity == iToastGravityTop) {
+                point = CGPointMake(window.frame.size.width / 2, 45);
+            } else if (theSettings.gravity == iToastGravityBottom) {
+                point = CGPointMake(window.frame.size.width / 2, window.frame.size.height - 45);
+            } else if (theSettings.gravity == iToastGravityCenter) {
+                point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
+            } else {
+                point = theSettings.postition;
+            }
+            
+            point = CGPointMake(point.x + offsetLeft, point.y + offsetTop);
+            break;
+        }
+        case UIDeviceOrientationPortraitUpsideDown:
+        {
+            v.transform = CGAffineTransformMakeRotation(M_PI);
+            
+            float width = window.frame.size.width;
+            float height = window.frame.size.height;
+            
+            if (theSettings.gravity == iToastGravityTop) {
+                point = CGPointMake(width / 2, height - 45);
+            } else if (theSettings.gravity == iToastGravityBottom) {
+                point = CGPointMake(width / 2, 45);
+            } else if (theSettings.gravity == iToastGravityCenter) {
+                point = CGPointMake(width/2, height/2);
+            } else {
+                // TODO : handle this case
+                point = theSettings.postition;
+            }
+            
+            point = CGPointMake(point.x - offsetLeft, point.y - offsetTop);
+            break;
+        }
+        case UIDeviceOrientationLandscapeLeft:
+        {
+            v.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
+            
+            if (theSettings.gravity == iToastGravityTop) {
+                point = CGPointMake(window.frame.size.width - 45, window.frame.size.height / 2);
+            } else if (theSettings.gravity == iToastGravityBottom) {
+                point = CGPointMake(45,window.frame.size.height / 2);
+            } else if (theSettings.gravity == iToastGravityCenter) {
+                point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
+            } else {
+                // TODO : handle this case
+                point = theSettings.postition;
+            }
+            
+            point = CGPointMake(point.x - offsetTop, point.y - offsetLeft);
+            break;
+        }
+        case UIDeviceOrientationLandscapeRight:
+        {
+            v.transform = CGAffineTransformMakeRotation(-M_PI/2);
+            
+            if (theSettings.gravity == iToastGravityTop) {
+                point = CGPointMake(45, window.frame.size.height / 2);
+            } else if (theSettings.gravity == iToastGravityBottom) {
+                point = CGPointMake(window.frame.size.width - 45, window.frame.size.height/2);
+            } else if (theSettings.gravity == iToastGravityCenter) {
+                point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
+            } else {
+                // TODO : handle this case
+                point = theSettings.postition;
+            }
+            
+            point = CGPointMake(point.x + offsetTop, point.y + offsetLeft);
+            break;
+        }
+        default:
+            break;
+    }
+
 	v.center = point;
 	
 	NSTimer *timer1 = [NSTimer timerWithTimeInterval:((float)theSettings.duration)/1000 
@@ -152,6 +238,11 @@ static iToastSettings *sharedSettings = nil;
 @synthesize images;
 
 - (void) setImage:(UIImage *) img forType:(iToastType) type{
+	if (type == iToastTypeNone) {
+		// This should not be used, internal use only (to force no image)
+		return;
+	}
+	
 	if (!images) {
 		images = [[NSMutableDictionary alloc] initWithCapacity:4];
 	}

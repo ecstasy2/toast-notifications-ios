@@ -25,7 +25,8 @@ typedef enum iToastType {
 	iToastTypeInfo = -100000,
 	iToastTypeNotice,
 	iToastTypeWarning,
-	iToastTypeError
+	iToastTypeError,
+	iToastTypeNone // For internal use only (to force no image)
 }iToastType;
 
 
@@ -43,7 +44,7 @@ typedef enum iToastType {
 }
 
 - (void) show;
-
+- (void) show:(iToastType) type;
 - (iToast *) setDuration:(NSInteger ) duration;
 - (iToast *) setGravity:(iToastGravity) gravity 
 			 offsetLeft:(NSInteger) left
