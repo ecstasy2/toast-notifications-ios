@@ -165,6 +165,14 @@ static iToastSettings *sharedSettings = nil;
 										   userInfo:nil repeats:NO];
 	[[NSRunLoop mainRunLoop] addTimer:timer1 forMode:NSDefaultRunLoopMode];
 	
+	if ([[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeLeft) {
+	    v.transform = CGAffineTransformMakeRotation(1.570796325); //rotation in radians
+	} else if ([[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeRight) {
+	    v.transform = CGAffineTransformMakeRotation(4.712388975);
+	} else if ([[UIDevice currentDevice] orientation] == UIDeviceOrientationPortraitUpsideDown) {
+	    v.transform = CGAffineTransformMakeRotation(3.14159265);
+	}
+	
 	[window addSubview:v];
 	
 	view = [v retain];
