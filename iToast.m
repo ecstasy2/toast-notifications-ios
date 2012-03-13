@@ -80,84 +80,84 @@ static iToastSettings *sharedSettings = nil;
 	
 	CGPoint point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
 	
-    // Set correct orientation/location regarding device orientation
-    UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
-    switch (orientation) {
-        case UIDeviceOrientationPortrait:
-        {
-            if (theSettings.gravity == iToastGravityTop) {
-                point = CGPointMake(window.frame.size.width / 2, 45);
-            } else if (theSettings.gravity == iToastGravityBottom) {
-                point = CGPointMake(window.frame.size.width / 2, window.frame.size.height - 45);
-            } else if (theSettings.gravity == iToastGravityCenter) {
-                point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
-            } else {
-                point = theSettings.postition;
-            }
-            
-            point = CGPointMake(point.x + offsetLeft, point.y + offsetTop);
-            break;
-        }
-        case UIDeviceOrientationPortraitUpsideDown:
-        {
-            v.transform = CGAffineTransformMakeRotation(M_PI);
-            
-            float width = window.frame.size.width;
-            float height = window.frame.size.height;
-            
-            if (theSettings.gravity == iToastGravityTop) {
-                point = CGPointMake(width / 2, height - 45);
-            } else if (theSettings.gravity == iToastGravityBottom) {
-                point = CGPointMake(width / 2, 45);
-            } else if (theSettings.gravity == iToastGravityCenter) {
-                point = CGPointMake(width/2, height/2);
-            } else {
-                // TODO : handle this case
-                point = theSettings.postition;
-            }
-            
-            point = CGPointMake(point.x - offsetLeft, point.y - offsetTop);
-            break;
-        }
-        case UIDeviceOrientationLandscapeLeft:
-        {
-            v.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
-            
-            if (theSettings.gravity == iToastGravityTop) {
-                point = CGPointMake(window.frame.size.width - 45, window.frame.size.height / 2);
-            } else if (theSettings.gravity == iToastGravityBottom) {
-                point = CGPointMake(45,window.frame.size.height / 2);
-            } else if (theSettings.gravity == iToastGravityCenter) {
-                point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
-            } else {
-                // TODO : handle this case
-                point = theSettings.postition;
-            }
-            
-            point = CGPointMake(point.x - offsetTop, point.y - offsetLeft);
-            break;
-        }
-        case UIDeviceOrientationLandscapeRight:
-        {
-            v.transform = CGAffineTransformMakeRotation(-M_PI/2);
-            
-            if (theSettings.gravity == iToastGravityTop) {
-                point = CGPointMake(45, window.frame.size.height / 2);
-            } else if (theSettings.gravity == iToastGravityBottom) {
-                point = CGPointMake(window.frame.size.width - 45, window.frame.size.height/2);
-            } else if (theSettings.gravity == iToastGravityCenter) {
-                point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
-            } else {
-                // TODO : handle this case
-                point = theSettings.postition;
-            }
-            
-            point = CGPointMake(point.x + offsetTop, point.y + offsetLeft);
-            break;
-        }
-        default:
-            break;
-    }
+	// Set correct orientation/location regarding device orientation
+	UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
+	switch (orientation) {
+		case UIDeviceOrientationPortrait:
+		{
+			if (theSettings.gravity == iToastGravityTop) {
+				point = CGPointMake(window.frame.size.width / 2, 45);
+			} else if (theSettings.gravity == iToastGravityBottom) {
+				point = CGPointMake(window.frame.size.width / 2, window.frame.size.height - 45);
+			} else if (theSettings.gravity == iToastGravityCenter) {
+				point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
+			} else {
+				point = theSettings.postition;
+			}
+			
+			point = CGPointMake(point.x + offsetLeft, point.y + offsetTop);
+			break;
+		}
+		case UIDeviceOrientationPortraitUpsideDown:
+		{
+			v.transform = CGAffineTransformMakeRotation(M_PI);
+			
+			float width = window.frame.size.width;
+			float height = window.frame.size.height;
+			
+			if (theSettings.gravity == iToastGravityTop) {
+				point = CGPointMake(width / 2, height - 45);
+			} else if (theSettings.gravity == iToastGravityBottom) {
+				point = CGPointMake(width / 2, 45);
+			} else if (theSettings.gravity == iToastGravityCenter) {
+				point = CGPointMake(width/2, height/2);
+			} else {
+				// TODO : handle this case
+				point = theSettings.postition;
+			}
+			
+			point = CGPointMake(point.x - offsetLeft, point.y - offsetTop);
+			break;
+		}
+		case UIDeviceOrientationLandscapeLeft:
+		{
+			v.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
+			
+			if (theSettings.gravity == iToastGravityTop) {
+				point = CGPointMake(window.frame.size.width - 45, window.frame.size.height / 2);
+			} else if (theSettings.gravity == iToastGravityBottom) {
+				point = CGPointMake(45,window.frame.size.height / 2);
+			} else if (theSettings.gravity == iToastGravityCenter) {
+				point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
+			} else {
+				// TODO : handle this case
+				point = theSettings.postition;
+			}
+			
+			point = CGPointMake(point.x - offsetTop, point.y - offsetLeft);
+			break;
+		}
+		case UIDeviceOrientationLandscapeRight:
+		{
+			v.transform = CGAffineTransformMakeRotation(-M_PI/2);
+			
+			if (theSettings.gravity == iToastGravityTop) {
+				point = CGPointMake(45, window.frame.size.height / 2);
+			} else if (theSettings.gravity == iToastGravityBottom) {
+				point = CGPointMake(window.frame.size.width - 45, window.frame.size.height/2);
+			} else if (theSettings.gravity == iToastGravityCenter) {
+				point = CGPointMake(window.frame.size.width/2, window.frame.size.height/2);
+			} else {
+				// TODO : handle this case
+				point = theSettings.postition;
+			}
+			
+			point = CGPointMake(point.x + offsetTop, point.y + offsetLeft);
+			break;
+		}
+		default:
+			break;
+	}
 
 	v.center = point;
 	
