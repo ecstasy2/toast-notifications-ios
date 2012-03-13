@@ -64,6 +64,7 @@ static iToastSettings *sharedSettings = nil;
 		label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
 	}
 	[v addSubview:label];
+	[label release];
 	
 	if (image) {
 		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
