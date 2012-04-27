@@ -9,7 +9,7 @@
 #import "iToast.h"
 #import <QuartzCore/QuartzCore.h>
 
-static const CGFloat kComponentPadding = 10;
+static const CGFloat kComponentPadding = 5;
 
 static iToastSettings *sharedSettings = nil;
 
