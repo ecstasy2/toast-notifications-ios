@@ -16,6 +16,8 @@ static iToastSettings *sharedSettings = nil;
 @interface iToast(private)
 
 - (iToast *) settings;
+- (CGRect)_toastFrameForImageSize:(CGSize)imageSize withLocation:(iToastImageLocation)location andTextSize:(CGSize)textSize;
+- (CGRect)_frameForImage:(iToastType)type inToastFrame:(CGRect)toastFrame;
 
 @end
 
