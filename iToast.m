@@ -9,6 +9,8 @@
 #import "iToast.h"
 #import <QuartzCore/QuartzCore.h>
 
+static const CGFloat kComponentPadding = 10;
+
 static iToastSettings *sharedSettings = nil;
 
 @interface iToast(private)
@@ -33,7 +35,7 @@ static iToastSettings *sharedSettings = nil;
 	[self show:iToastTypeNone];
 }
 
-- (void) show:(iToastType) type{
+- (void) show:(iToastType) type {
 	
 	iToastSettings *theSettings = _settings;
 	
@@ -46,7 +48,7 @@ static iToastSettings *sharedSettings = nil;
 	UIFont *font = [UIFont systemFontOfSize:16];
 	CGSize textSize = [text sizeWithFont:font constrainedToSize:CGSizeMake(280, 60)];
 	
-	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, textSize.width + 5, textSize.height + 5)];
+	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, textSize.width + kComponentPadding, textSize.height + kComponentPadding)];
 	label.backgroundColor = [UIColor clearColor];
 	label.textColor = [UIColor whiteColor];
 	label.font = font;
@@ -57,10 +59,27 @@ static iToastSettings *sharedSettings = nil;
 	
 	UIButton *v = [UIButton buttonWithType:UIButtonTypeCustom];
 	if (image) {
-		v.frame = CGRectMake(0, 0, image.size.width + textSize.width + 15, MAX(textSize.height, image.size.height) + 10);
-		label.center = CGPointMake(image.size.width + 10 + (v.frame.size.width - image.size.width - 10) / 2, v.frame.size.height / 2);
+		v.frame = [self _toastFrameForImageSize:image.size withLocation:[theSettings imageLocation] andTextSize:textSize];
+        
+        switch ([theSettings imageLocation]) {
+            case iToastImageLocationLeft:
+                [label setTextAlignment:UITextAlignmentLeft];
+                label.center = CGPointMake(image.size.width + kComponentPadding * 2 
+                                           + (v.frame.size.width - image.size.width - kComponentPadding * 2) / 2, 
+                                           v.frame.size.height / 2);
+                break;
+            case iToastImageLocationTop:
+                [label setTextAlignment:UITextAlignmentCenter];
+                label.center = CGPointMake(v.frame.size.width / 2, 
+                                           (image.size.height + kComponentPadding * 2 
+                                            + (v.frame.size.height - image.size.height - kComponentPadding * 2) / 2));
+                break;
+            default:
+                break;
+        }
+		
 	} else {
-		v.frame = CGRectMake(0, 0, textSize.width + 10, textSize.height + 10);
+		v.frame = CGRectMake(0, 0, textSize.width + kComponentPadding * 2, textSize.height + kComponentPadding * 2);
 		label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
 	}
 	[v addSubview:label];
@@ -68,7 +87,7 @@ static iToastSettings *sharedSettings = nil;
 	
 	if (image) {
 		UIImageView *imageView = [[UIImageView alloc] initWithImage:image];
-		imageView.frame = CGRectMake(5, (v.frame.size.height - image.size.height)/2, image.size.width, image.size.height);
+		imageView.frame = [self _frameForImage:type inToastFrame:v.frame];
 		[v addSubview:imageView];
 		[imageView release];
 	}
@@ -173,6 +192,49 @@ static iToastSettings *sharedSettings = nil;
 	[v addTarget:self action:@selector(hideToast:) forControlEvents:UIControlEventTouchDown];
 }
 
+- (CGRect)_toastFrameForImageSize:(CGSize)imageSize withLocation:(iToastImageLocation)location andTextSize:(CGSize)textSize {
+    CGRect theRect = CGRectZero;
+    switch (location) {
+        case iToastImageLocationLeft:
+            theRect = CGRectMake(0, 0, 
+                                 imageSize.width + textSize.width + kComponentPadding * 3, 
+                                 MAX(textSize.height, imageSize.height) + kComponentPadding * 2);
+            break;
+        case iToastImageLocationTop:
+            theRect = CGRectMake(0, 0, 
+                                 MAX(textSize.width, imageSize.width) + kComponentPadding * 2, 
+                                 imageSize.height + textSize.height + kComponentPadding * 3);
+            
+        default:
+            break;
+    }    
+    return theRect;
+}
+
+- (CGRect)_frameForImage:(iToastType)type inToastFrame:(CGRect)toastFrame {
+    iToastSettings *theSettings = _settings;
+    UIImage *image = [theSettings.images valueForKey:[NSString stringWithFormat:@"%i", type]];
+    
+    if (!image) return CGRectZero;
+    
+    CGRect imageFrame = CGRectZero;
+
+    switch ([theSettings imageLocation]) {
+        case iToastImageLocationLeft:
+            imageFrame = CGRectMake(kComponentPadding, (toastFrame.size.height - image.size.height) / 2, image.size.width, image.size.height);
+            break;
+        case iToastImageLocationTop:
+            imageFrame = CGRectMake((toastFrame.size.width - image.size.width) / 2, kComponentPadding, image.size.width, image.size.height);
+            break;
+            
+        default:
+            break;
+    }
+    
+    return imageFrame;
+    
+}
+
 - (void) hideToast:(NSTimer*)theTimer{
 	[UIView beginAnimations:nil context:NULL];
 	view.alpha = 0;
@@ -237,8 +299,9 @@ static iToastSettings *sharedSettings = nil;
 @synthesize gravity;
 @synthesize postition;
 @synthesize images;
+@synthesize imageLocation;
 
-- (void) setImage:(UIImage *) img forType:(iToastType) type{
+- (void) setImage:(UIImage *) img withLocation:(iToastImageLocation)location forType:(iToastType) type {
 	if (type == iToastTypeNone) {
 		// This should not be used, internal use only (to force no image)
 		return;
@@ -252,6 +315,12 @@ static iToastSettings *sharedSettings = nil;
 		NSString *key = [NSString stringWithFormat:@"%i", type];
 		[images setValue:img forKey:key];
 	}
+    
+    [self setImageLocation:location];
+}
+
+- (void)setImage:(UIImage *)img forType:(iToastType)type {
+    [self setImage:img withLocation:iToastImageLocationLeft forType:type];
 }
 
 
@@ -277,6 +346,8 @@ static iToastSettings *sharedSettings = nil;
 	for (NSString *key in keys){
 		[copy setImage:[images valueForKey:key] forType:[key intValue]];
 	}
+    
+    [copy setImageLocation:imageLocation];
 	
 	return copy;
 }

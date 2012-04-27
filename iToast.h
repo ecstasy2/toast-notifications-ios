@@ -29,6 +29,11 @@ typedef enum iToastType {
 	iToastTypeNone // For internal use only (to force no image)
 }iToastType;
 
+typedef enum {
+    iToastImageLocationTop,
+    iToastImageLocationLeft
+} iToastImageLocation;
+
 
 @class iToastSettings;
 
@@ -76,9 +81,11 @@ typedef enum iToastType {
 @property(assign) iToastGravity gravity;
 @property(assign) CGPoint postition;
 @property(readonly) NSDictionary *images;
+@property(assign) iToastImageLocation imageLocation;
 
 
 - (void) setImage:(UIImage *)img forType:(iToastType) type;
+- (void) setImage:(UIImage *)img withLocation:(iToastImageLocation)location forType:(iToastType)type;
 + (iToastSettings *) getSharedSettings;
 						  
 @end
