@@ -63,6 +63,10 @@ static iToastSettings *sharedSettings = nil;
 		v.frame = CGRectMake(0, 0, textSize.width + 10, textSize.height + 10);
 		label.center = CGPointMake(v.frame.size.width / 2, v.frame.size.height / 2);
 	}
+	CGRect lbfrm = label.frame;
+	lbfrm.origin.x = ceil(lbfrm.origin.x);
+	lbfrm.origin.y = ceil(lbfrm.origin.y);
+	label.frame = lbfrm;
 	[v addSubview:label];
 	[label release];
 	
