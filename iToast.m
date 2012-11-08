@@ -30,6 +30,8 @@ THE SOFTWARE.
 #import "iToast.h"
 #import <QuartzCore/QuartzCore.h>
 
+#define CURRENT_TOAST_TAG 6984678
+
 static const CGFloat kComponentPadding = 5;
 
 static iToastSettings *sharedSettings = nil;
@@ -212,6 +214,13 @@ static iToastSettings *sharedSettings = nil;
 										   userInfo:nil repeats:NO];
 	[[NSRunLoop mainRunLoop] addTimer:timer1 forMode:NSDefaultRunLoopMode];
 	
+	v.tag = CURRENT_TOAST_TAG;
+
+	UIview *currentToast = [window viewWithTag:CURRENT_TOAST_TAG];
+	if (currentToast != nil) {
+    	[currentToast removeFromSuperview];
+	}
+
 	v.alpha = 0;
 	[window addSubview:v];
 	[UIView beginAnimations:nil context:nil];
