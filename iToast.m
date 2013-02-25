@@ -208,6 +208,7 @@ static iToastSettings *sharedSettings = nil;
 	}
 
 	v.center = point;
+	v.frame = CGRectIntegral(v.frame);
 	
 	NSTimer *timer1 = [NSTimer timerWithTimeInterval:((float)theSettings.duration)/1000 
 											 target:self selector:@selector(hideToast:) 
