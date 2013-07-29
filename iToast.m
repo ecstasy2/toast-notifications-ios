@@ -70,7 +70,7 @@ static iToastSettings *sharedSettings = nil;
 	
 	UIImage *image = [theSettings.images valueForKey:[NSString stringWithFormat:@"%i", type]];
 	
-	UIFont *font = [UIFont systemFontOfSize:16];
+	UIFont *font = [UIFont systemFontOfSize:theSettings.fontSize];
 	CGSize textSize = [text sizeWithFont:font constrainedToSize:CGSizeMake(280, 60)];
 	
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, textSize.width + kComponentPadding, textSize.height + kComponentPadding)];
@@ -79,8 +79,10 @@ static iToastSettings *sharedSettings = nil;
 	label.font = font;
 	label.text = text;
 	label.numberOfLines = 0;
-	label.shadowColor = [UIColor darkGrayColor];
-	label.shadowOffset = CGSizeMake(1, 1);
+	if (theSettings.useShadow) {
+		label.shadowColor = [UIColor darkGrayColor];
+		label.shadowOffset = CGSizeMake(1, 1);
+	}
 	
 	UIButton *v = [UIButton buttonWithType:UIButtonTypeCustom];
 	if (image) {
@@ -121,8 +123,8 @@ static iToastSettings *sharedSettings = nil;
 		[imageView release];
 	}
 	
-	v.backgroundColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.7];
-	v.layer.cornerRadius = 5;
+	v.backgroundColor = [UIColor colorWithRed:theSettings.bgRed green:theSettings.bgGreen blue:theSettings.bgBlue alpha:theSettings.bgAlpha];
+	v.layer.cornerRadius = theSettings.cornerRadius;
 	
 	UIWindow *window = [[[UIApplication sharedApplication] windows] objectAtIndex:0];
 	
@@ -143,7 +145,7 @@ static iToastSettings *sharedSettings = nil;
 				point = theSettings.postition;
 			}
 			
-			point = CGPointMake(point.x + offsetLeft, point.y + offsetTop);
+			point = CGPointMake(point.x + theSettings.offsetLeft, point.y + theSettings.offsetTop);
 			break;
 		}
 		case UIDeviceOrientationPortraitUpsideDown:
@@ -164,7 +166,7 @@ static iToastSettings *sharedSettings = nil;
 				point = theSettings.postition;
 			}
 			
-			point = CGPointMake(point.x - offsetLeft, point.y - offsetTop);
+			point = CGPointMake(point.x - theSettings.offsetLeft, point.y - theSettings.offsetTop);
 			break;
 		}
 		case UIDeviceOrientationLandscapeLeft:
@@ -182,7 +184,7 @@ static iToastSettings *sharedSettings = nil;
 				point = theSettings.postition;
 			}
 			
-			point = CGPointMake(point.x - offsetTop, point.y - offsetLeft);
+			point = CGPointMake(point.x - theSettings.offsetTop, point.y - theSettings.offsetLeft);
 			break;
 		}
 		case UIDeviceOrientationLandscapeRight:
@@ -200,7 +202,7 @@ static iToastSettings *sharedSettings = nil;
 				point = theSettings.postition;
 			}
 			
-			point = CGPointMake(point.x + offsetTop, point.y + offsetLeft);
+			point = CGPointMake(point.x + theSettings.offsetTop, point.y + theSettings.offsetLeft);
 			break;
 		}
 		default:
@@ -208,6 +210,7 @@ static iToastSettings *sharedSettings = nil;
 	}
 
 	v.center = point;
+	v.frame = CGRectIntegral(v.frame);
 	
 	NSTimer *timer1 = [NSTimer timerWithTimeInterval:((float)theSettings.duration)/1000 
 											 target:self selector:@selector(hideToast:) 
@@ -307,8 +310,8 @@ static iToastSettings *sharedSettings = nil;
 			 offsetLeft:(NSInteger) left
 			  offsetTop:(NSInteger) top{
 	[self theSettings].gravity = gravity;
-	offsetLeft = left;
-	offsetTop = top;
+	[self theSettings].offsetLeft = left;
+	[self theSettings].offsetTop = top;
 	return self;
 }
 
@@ -322,6 +325,42 @@ static iToastSettings *sharedSettings = nil;
 	
 	return self;
 }
+
+- (iToast *) setFontSize:(CGFloat) fontSize{
+	[self theSettings].fontSize = fontSize;
+	return self;
+}
+
+- (iToast *) setUseShadow:(BOOL) useShadow{
+	[self theSettings].useShadow = useShadow;
+	return self;
+}
+
+- (iToast *) setCornerRadius:(CGFloat) cornerRadius{
+	[self theSettings].cornerRadius = cornerRadius;
+	return self;
+}
+
+- (iToast *) setBgRed:(CGFloat) bgRed{
+	[self theSettings].bgRed = bgRed;
+	return self;
+}
+
+- (iToast *) setBgGreen:(CGFloat) bgGreen{
+	[self theSettings].bgGreen = bgGreen;
+	return self;
+}
+
+- (iToast *) setBgBlue:(CGFloat) bgBlue{
+	[self theSettings].bgBlue = bgBlue;
+	return self;
+}
+
+- (iToast *) setBgAlpha:(CGFloat) bgAlpha{
+	[self theSettings].bgAlpha = bgAlpha;
+	return self;
+}
+
 
 -(iToastSettings *) theSettings{
 	if (!_settings) {
@@ -338,6 +377,13 @@ static iToastSettings *sharedSettings = nil;
 @synthesize duration;
 @synthesize gravity;
 @synthesize postition;
+@synthesize fontSize;
+@synthesize useShadow;
+@synthesize cornerRadius;
+@synthesize bgRed;
+@synthesize bgGreen;
+@synthesize bgBlue;
+@synthesize bgAlpha;
 @synthesize images;
 @synthesize imageLocation;
 
@@ -369,6 +415,15 @@ static iToastSettings *sharedSettings = nil;
 		sharedSettings = [iToastSettings new];
 		sharedSettings.gravity = iToastGravityCenter;
 		sharedSettings.duration = iToastDurationShort;
+		sharedSettings.fontSize = 16.0;
+		sharedSettings.useShadow = YES;
+		sharedSettings.cornerRadius = 5.0;
+		sharedSettings.bgRed = 0;
+		sharedSettings.bgGreen = 0;
+		sharedSettings.bgBlue = 0;
+		sharedSettings.bgAlpha = 0.7;
+		sharedSettings.offsetLeft = 0;
+		sharedSettings.offsetTop = 0;
 	}
 	
 	return sharedSettings;
@@ -380,6 +435,15 @@ static iToastSettings *sharedSettings = nil;
 	copy.gravity = self.gravity;
 	copy.duration = self.duration;
 	copy.postition = self.postition;
+	copy.fontSize = self.fontSize;
+	copy.useShadow = self.useShadow;
+	copy.cornerRadius = self.cornerRadius;
+	copy.bgRed = self.bgRed;
+	copy.bgGreen = self.bgGreen;
+	copy.bgBlue = self.bgBlue;
+	copy.bgAlpha = self.bgAlpha;
+	copy.offsetLeft = self.offsetLeft;
+	copy.offsetTop = self.offsetTop;
 	
 	NSArray *keys = [self.images allKeys];
 	
