@@ -1,3 +1,5 @@
+
+
 # What is iToast
 
 This page tells you what toast notifications are and why you may need them in your iPhone/iPad application.
@@ -140,3 +142,13 @@ You are interested by those features? write the code and share with the communit
 
   * Display of icons based of the type of iToast.
   * Plugin based interface to customize the toasts.
+
+
+Showing your appreciation
+=========================
+A few people already requested it, so now it's here: a Flattr button.
+
+[![Flattr this][2]][1]
+
+[1]: http://flattr.com/thing/852846/toast-notifications-ios
+[2]: http://api.flattr.com/button/button-static-50x60.png
