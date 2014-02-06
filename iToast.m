@@ -374,6 +374,8 @@ static iToastSettings *sharedSettings = nil;
 
 
 @implementation iToastSettings
+@synthesize offsetLeft;
+@synthesize offsetTop;
 @synthesize duration;
 @synthesize gravity;
 @synthesize postition;
