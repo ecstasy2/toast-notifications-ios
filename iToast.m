@@ -90,13 +90,13 @@ static iToastSettings *sharedSettings = nil;
         
         switch ([theSettings imageLocation]) {
             case iToastImageLocationLeft:
-                [label setTextAlignment:UITextAlignmentLeft];
+                [label setTextAlignment:NSTextAlignmentLeft];
                 label.center = CGPointMake(image.size.width + kComponentPadding * 2 
                                            + (v.frame.size.width - image.size.width - kComponentPadding * 2) / 2, 
                                            v.frame.size.height / 2);
                 break;
             case iToastImageLocationTop:
-                [label setTextAlignment:UITextAlignmentCenter];
+                [label setTextAlignment:NSTextAlignmentCenter];
                 label.center = CGPointMake(v.frame.size.width / 2, 
                                            (image.size.height + kComponentPadding * 2 
                                             + (v.frame.size.height - image.size.height - kComponentPadding * 2) / 2));
