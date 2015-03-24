@@ -133,7 +133,7 @@ static iToastSettings *sharedSettings = nil;
 	
 	UIWindow *window = [[[UIApplication sharedApplication] windows] objectAtIndex:0];
 	
-	CGPoint point;
+	CGPoint point = CGPointZero;
 	
 	// Set correct orientation/location regarding device orientation
 	UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
