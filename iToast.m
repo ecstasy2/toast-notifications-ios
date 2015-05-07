@@ -137,6 +137,7 @@ static iToastSettings *sharedSettings = nil;
 	
 	// Set correct orientation/location regarding device orientation
 	UIInterfaceOrientation orientation = (UIInterfaceOrientation)[[UIApplication sharedApplication] statusBarOrientation];
+	double version = [[[UIDevice currentDevice] systemVersion] doubleValue];
 	switch (orientation) {
 		case UIDeviceOrientationPortrait:
 		{
@@ -155,7 +156,9 @@ static iToastSettings *sharedSettings = nil;
 		}
 		case UIDeviceOrientationPortraitUpsideDown:
 		{
-			v.transform = CGAffineTransformMakeRotation(M_PI);
+			if (version < 8.0) {
+				v.transform = CGAffineTransformMakeRotation(M_PI);
+			}
 			
 			float width = window.frame.size.width;
 			float height = window.frame.size.height;
@@ -176,7 +179,9 @@ static iToastSettings *sharedSettings = nil;
 		}
 		case UIDeviceOrientationLandscapeLeft:
 		{
-			v.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
+			if (version < 8.0) {
+				v.transform = CGAffineTransformMakeRotation(M_PI/2); //rotation in radians
+			}
 			
 			if (theSettings.gravity == iToastGravityTop) {
 				point = CGPointMake(window.frame.size.width - 45, window.frame.size.height / 2);
@@ -194,7 +199,9 @@ static iToastSettings *sharedSettings = nil;
 		}
 		case UIDeviceOrientationLandscapeRight:
 		{
-			v.transform = CGAffineTransformMakeRotation(-M_PI/2);
+			if (version < 8.0) {
+				v.transform = CGAffineTransformMakeRotation(-M_PI/2);
+			}
 			
 			if (theSettings.gravity == iToastGravityTop) {
 				point = CGPointMake(45, window.frame.size.height / 2);
